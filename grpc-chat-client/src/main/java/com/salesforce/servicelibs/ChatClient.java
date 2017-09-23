@@ -29,8 +29,16 @@ public class ChatClient {
 
         // Subscribe to incoming messages
         futureStub.getMessages(Empty.getDefaultInstance(), new LambdaStreamObserver<>(
-                chatMessage -> printLine(console, chatMessage.getAuthor(), chatMessage.getMessage()),
-                throwable -> printLine(console, "ERROR", throwable.getMessage())
+                chatMessage -> {
+                    // Don't print our own messages
+                    if (chatMessage.getAuthor() != author) {
+                        printLine(console, chatMessage.getAuthor(), chatMessage.getMessage());
+                    }
+                },
+                throwable -> {
+                    printLine(console, "ERROR", throwable.getMessage());
+                    System.exit(1);
+                }
         ));
 
         // Publish outgoing messages

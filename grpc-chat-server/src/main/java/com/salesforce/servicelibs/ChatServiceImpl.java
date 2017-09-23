@@ -1,7 +1,6 @@
 package com.salesforce.servicelibs;
 
 import com.google.protobuf.Empty;
-import com.salesforce.grpc.contrib.MoreTimestamps;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 
@@ -9,7 +8,13 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class ChatServiceImpl extends ChatGrpc.ChatImplBase {
-    private Observable messageObservable = new Observable();
+    private Observable messageObservable = new Observable() {
+        @Override
+        public void notifyObservers(Object arg) {
+            super.setChanged();
+            super.notifyObservers(arg);
+        }
+    };
 
     @Override
     public void postMessage(ChatProto.ChatMessage request, StreamObserver<Empty> responseObserver) {
