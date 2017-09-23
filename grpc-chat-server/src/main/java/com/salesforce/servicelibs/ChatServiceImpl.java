@@ -1,6 +1,7 @@
 package com.salesforce.servicelibs;
 
 import com.google.protobuf.Empty;
+import com.salesforce.grpc.contrib.MoreTimestamps;
 import io.grpc.stub.ServerCallStreamObserver;
 import io.grpc.stub.StreamObserver;
 
@@ -18,7 +19,7 @@ public class ChatServiceImpl extends ChatGrpc.ChatImplBase {
 
     @Override
     public void postMessage(ChatProto.ChatMessage request, StreamObserver<Empty> responseObserver) {
-        System.out.printf("%s: %s\n", request.getAuthor(), request.getMessage());
+        System.out.printf("[%s] %s: %s\n", MoreTimestamps.toInstantUtc(request.getWhen()), request.getAuthor(), request.getMessage());
         messageObservable.notifyObservers(request);
 
         responseObserver.onNext(Empty.getDefaultInstance());

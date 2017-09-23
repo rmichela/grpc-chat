@@ -31,7 +31,7 @@ public class ChatClient {
         futureStub.getMessages(Empty.getDefaultInstance(), new LambdaStreamObserver<>(
                 chatMessage -> {
                     // Don't print our own messages
-                    if (chatMessage.getAuthor() != author) {
+                    if (!chatMessage.getAuthor().equals(author)) {
                         printLine(console, chatMessage.getAuthor(), chatMessage.getMessage());
                     }
                 },
