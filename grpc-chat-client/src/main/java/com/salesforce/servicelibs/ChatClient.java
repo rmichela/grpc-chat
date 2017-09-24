@@ -16,7 +16,11 @@ public class ChatClient {
     private static final int PORT = 9999;
 
     public static void main(String[] args) throws Exception {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", PORT).usePlaintext(true).build();
+        // Set up channels and client stubs
+        ManagedChannel channel = ManagedChannelBuilder
+                .forAddress("localhost", PORT)
+                .usePlaintext(true)
+                .build();
         ChatGrpc.ChatBlockingStub blockingStub = ChatGrpc.newBlockingStub(channel);
         ChatGrpc.ChatStub futureStub = ChatGrpc.newStub(channel);
 
@@ -29,12 +33,14 @@ public class ChatClient {
 
         // Subscribe to incoming messages
         futureStub.getMessages(Empty.getDefaultInstance(), new LambdaStreamObserver<>(
+                // OnNext()
                 chatMessage -> {
                     // Don't print our own messages
                     if (!chatMessage.getAuthor().equals(author)) {
                         printLine(console, chatMessage.getAuthor(), chatMessage.getMessage());
                     }
                 },
+                // OnError()
                 throwable -> {
                     printLine(console, "ERROR", throwable.getMessage());
                     System.exit(1);
@@ -47,6 +53,7 @@ public class ChatClient {
             blockingStub.postMessage(toMessage(author, message));
         }
 
+        // Log out and shutdown
         blockingStub.postMessage(toMessage(author, "left."));
         channel.shutdown();
         channel.awaitTermination(1, TimeUnit.SECONDS);
