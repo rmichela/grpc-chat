@@ -15,8 +15,8 @@ public class ChatServiceImpl extends ChatGrpc.ChatImplBase {
     private Observable messageObservable = new Observable() {
         @Override
         public void notifyObservers(Object arg) {
-            super.setChanged();
-            super.notifyObservers(arg);
+        super.setChanged();
+        super.notifyObservers(arg);
         }
     };
 
@@ -26,7 +26,7 @@ public class ChatServiceImpl extends ChatGrpc.ChatImplBase {
     @Override
     public void postMessage(ChatProto.ChatMessage request, StreamObserver<Empty> responseObserver) {
         System.out.printf("[%s] %s: %s\n", MoreTimestamps.toInstantUtc(request.getWhen()),
-                request.getAuthor(), request.getMessage());
+            request.getAuthor(), request.getMessage());
         messageObservable.notifyObservers(request);
 
         responseObserver.onNext(Empty.getDefaultInstance());
@@ -39,7 +39,7 @@ public class ChatServiceImpl extends ChatGrpc.ChatImplBase {
     @Override
     public void getMessages(Empty request, StreamObserver<ChatProto.ChatMessage> responseObserver) {
         ServerCallStreamObserver<ChatProto.ChatMessage> serverResponseObserver =
-                (ServerCallStreamObserver<ChatProto.ChatMessage>) responseObserver;
+            (ServerCallStreamObserver<ChatProto.ChatMessage>) responseObserver;
 
         Observer messageObserver = (o, arg) -> {
             serverResponseObserver.onNext((ChatProto.ChatMessage) arg);

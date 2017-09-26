@@ -10,9 +10,9 @@ public class ChatServer {
     public static void main(String[] args) throws Exception {
         // Create a server object
         Server server = ServerBuilder
-                .forPort(PORT)
-                .addService(new ChatServiceImpl())
-                .build();
+            .forPort(PORT)
+            .addService(new ChatServiceImpl())
+            .build();
 
         // Start the server
         Servers.shutdownWithJvm(server, 1000);

@@ -22,7 +22,7 @@ public class ChatClient {
                 .usePlaintext(true)
                 .build();
         ChatGrpc.ChatBlockingStub blockingStub = ChatGrpc.newBlockingStub(channel);
-        ChatGrpc.ChatStub futureStub = ChatGrpc.newStub(channel);
+        ChatGrpc.ChatStub streamStub = ChatGrpc.newStub(channel);
 
         ConsoleReader console = new ConsoleReader();
 
@@ -32,19 +32,19 @@ public class ChatClient {
         blockingStub.postMessage(toMessage(author, author + " joined."));
 
         // Subscribe to incoming messages
-        futureStub.getMessages(Empty.getDefaultInstance(), new LambdaStreamObserver<>(
-                // OnNext()
-                chatMessage -> {
-                    // Don't print our own messages
-                    if (!chatMessage.getAuthor().equals(author)) {
-                        printLine(console, chatMessage.getAuthor(), chatMessage.getMessage());
-                    }
-                },
-                // OnError()
-                throwable -> {
-                    printLine(console, "ERROR", throwable.getMessage());
-                    System.exit(1);
+        streamStub.getMessages(Empty.getDefaultInstance(), new LambdaStreamObserver<>(
+            // OnNext()
+            chatMessage -> {
+                // Don't print our own messages
+                if (!chatMessage.getAuthor().equals(author)) {
+                    printLine(console, chatMessage.getAuthor(), chatMessage.getMessage());
                 }
+            },
+            // OnError()
+            throwable -> {
+                printLine(console, "ERROR", throwable.getMessage());
+                System.exit(1);
+            }
         ));
 
         // Publish outgoing messages
